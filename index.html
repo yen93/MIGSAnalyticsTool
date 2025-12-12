@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIGS Rating Dashboard - Responsive</title>
+    <title>MIGS Rating Dashboard - Modern</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- Root and General Styling (Base: Mobile-first) --- */
+        /* --- Root and General Styling --- */
         :root {
             --primary-color: #007bff; /* Vibrant Blue */
             --secondary-color: #6c757d; /* Muted Grey */
@@ -26,7 +26,7 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--background-light);
             margin: 0;
-            padding: 20px; /* Reduced padding for mobile */
+            padding: 30px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -40,17 +40,17 @@
             background-color: var(--background-white);
             box-shadow: var(--shadow-light);
             border-radius: 16px;
-            padding: 25px; /* Reduced padding for mobile */
+            padding: 40px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         h1 {
             color: var(--primary-color);
-            font-size: 1.8em; /* Smaller for mobile */
+            font-size: 2.2em;
             font-weight: 700;
             margin: 0;
             letter-spacing: -0.5px;
@@ -59,29 +59,23 @@
         p.subtitle {
             color: var(--secondary-color);
             margin-top: 5px;
-            font-size: 1em;
+            font-size: 1.1em;
         }
 
         /* --- Input Section --- */
         .input-section {
             display: flex;
-            flex-direction: column; /* Stack vertically on mobile */
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 40px;
+            align-items: center;
             padding: 15px;
             border: 1px solid #dee2e6;
             border-radius: 8px;
             background-color: #fff;
         }
-        
-        /* Ensure label and input are aligned horizontally inside the stacked section */
-        .input-section label {
-            display: block; /* Takes full width */
-            margin-bottom: 5px;
-        }
 
         #member-id {
-            width: 100%;
+            flex-grow: 1;
             padding: 12px;
             border: 1px solid #ced4da;
             border-radius: 6px;
@@ -118,7 +112,7 @@
             cursor: not-allowed;
         }
 
-        /* --- Status Messages (unchanged) --- */
+        /* --- Status Messages --- */
         .status-message {
             text-align: center;
             padding: 15px;
@@ -150,159 +144,130 @@
         }
 
         #member-name {
-            font-size: 1.5em; /* Smaller for mobile */
+            font-size: 1.8em;
             font-weight: 700;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid #e9ecef;
         }
 
-        /* Total Score Card (Mobile Stacked) */
+        /* Total Score Card */
         .total-score-container {
             display: flex;
-            flex-direction: column; /* Stack scores vertically on mobile */
+            justify-content: space-between;
             align-items: center;
-            background-color: #eaf5ff;
+            background-color: #eaf5ff; /* Lightest Blue */
             border-radius: 12px;
-            padding: 20px; /* Reduced padding */
-            margin-bottom: 20px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
             border: 1px solid #cce5ff;
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.1);
         }
 
         .score-box {
             text-align: center;
-            width: 100%; /* Take full width */
-            padding: 10px 0;
+            flex: 1;
         }
 
         .score-divider {
-            height: 1px;
-            width: 80%; /* Horizontal divider */
+            height: 80px;
+            width: 1px;
             background-color: #cce5ff;
-            margin: 10px 0;
         }
 
         .total-value {
-            font-size: 2.5em; /* Smaller for mobile */
+            font-size: 3.5em;
             font-weight: 900;
             color: var(--primary-color);
             line-height: 1;
+            /* Animation */
             animation: fadeIn 0.8s ease-out;
         }
 
         .rating-value {
-            font-size: 2em; /* Smaller for mobile */
+            font-size: 2.5em;
             font-weight: 900;
-            color: var(--warning-color);
+            color: var(--warning-color); /* Gold/Star Color */
             line-height: 1;
+            /* Animation */
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .score-label {
-            font-size: 0.8em;
+            font-size: 0.9em;
             color: var(--secondary-color);
             margin-top: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        /* Points Grid (Mobile: 2 columns) */
+        /* Points Grid */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Two columns on small screens */
-            gap: 15px; /* Reduced gap */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
         }
 
         .card {
-            /* Styles remain largely the same, inherit mobile adjustments */
+            background-color: var(--background-white);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
         }
 
         .card-value {
-            font-size: 1.5em;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            line-height: 1.2;
         }
 
-        /* Improvement Section (unchanged in layout, inherits font size reduction) */
+        .card-label {
+            font-size: 0.85em;
+            color: var(--secondary-color);
+        }
+
+        /* Improvement Section */
         #improvement-section {
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 40px;
+            background-color: #f1fff1; /* Very light success green */
+            border-left: 5px solid var(--success-color);
+            padding: 25px;
+            border-radius: 8px;
         }
 
         .improvement-header {
-            font-size: 1.2em;
-        }
-        
-        /* --- Media Queries for Tablet and Laptop (Desktop View) --- */
-        @media (min-width: 768px) {
-            body {
-                padding: 30px;
-            }
-
-            .container {
-                padding: 40px;
-            }
-
-            h1 {
-                font-size: 2.2em; /* Restore larger size */
-            }
-
-            h2 {
-                font-size: 1.8em; /* Restore larger size */
-            }
-
-            /* Input Section: Horizontal layout */
-            .input-section {
-                flex-direction: row;
-                gap: 15px;
-                margin-bottom: 40px;
-            }
-            
-            .input-section label {
-                margin-bottom: 0;
-            }
-
-            /* Total Score Card: Horizontal layout */
-            .total-score-container {
-                flex-direction: row;
-                padding: 30px 40px;
-                margin-bottom: 30px;
-            }
-
-            .score-box {
-                padding: 0;
-            }
-
-            .score-divider {
-                height: 80px; /* Vertical divider */
-                width: 1px;
-                margin: 0 20px;
-            }
-            
-            .total-value {
-                font-size: 3.5em; /* Restore larger size */
-            }
-
-            .rating-value {
-                font-size: 2.5em; /* Restore larger size */
-            }
-
-            .score-label {
-                font-size: 0.9em;
-            }
-
-
-            /* Points Grid: 3 columns or more */
-            .dashboard-grid {
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 20px;
-            }
-
-            .card-value {
-                font-size: 1.8em;
-            }
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
         }
 
-        /* --- Animations (unchanged) --- */
+        .improvement-header::before {
+            content: '✓'; /* Modern checkmark */
+            font-size: 1.5em;
+            margin-right: 10px;
+            color: var(--success-color);
+            line-height: 1;
+        }
+
+        #how-to-improve {
+            font-size: 1em;
+            color: var(--text-dark);
+            white-space: pre-wrap; /* Preserve formatting if any */
+        }
+
+        /* --- Animations --- */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
