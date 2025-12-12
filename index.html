@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIGS Rating Dashboard - Modern</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- Root and General Styling --- */
+        :root {
+            --primary-color: #007bff; /* Vibrant Blue */
+            --secondary-color: #6c757d; /* Muted Grey */
+            --background-light: #f8f9fa;
+            --background-white: #ffffff;
+            --text-dark: #212529;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --shadow-light: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-light);
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: var(--background-white);
+            box-shadow: var(--shadow-light);
+            border-radius: 16px;
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2em;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            color: var(--secondary-color);
+            margin-top: 5px;
+            font-size: 1.1em;
+        }
+
+        /* --- Input Section --- */
+        .input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        #member-id {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #member-id:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        #fetch-button {
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease-in-out, transform 0.2s;
+        }
+
+        #fetch-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #fetch-button:disabled {
+            background-color: #b0c4de;
+            cursor: not-allowed;
+        }
+
+        /* --- Status Messages --- */
+        .status-message {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #loading {
+            background-color: #e9ecef;
+            color: var(--secondary-color);
+            display: none;
+        }
+
+        #error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+
+        /* --- Results Dashboard --- */
+        #results-dashboard {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.7s ease-in-out;
+        }
+
+        #member-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        /* Total Score Card */
+        .total-score-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #eaf5ff; /* Lightest Blue */
+            border-radius: 12px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            border: 1px solid #cce5ff;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.1);
+        }
+
+        .score-box {
+            text-align: center;
+            flex: 1;
+        }
+
+        .score-divider {
+            height: 80px;
+            width: 1px;
+            background-color: #cce5ff;
+        }
+
+        .total-value {
+            font-size: 3.5em;
+            font-weight: 900;
+            color: var(--primary-color);
+            line-height: 1;
+            /* Animation */
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .rating-value {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: var(--warning-color); /* Gold/Star Color */
+            line-height: 1;
+            /* Animation */
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Points Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--background-white);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .card-label {
+            font-size: 0.85em;
+            color: var(--secondary-color);
+        }
+
+        /* Improvement Section */
+        #improvement-section {
+            margin-top: 40px;
+            background-color: #f1fff1; /* Very light success green */
+            border-left: 5px solid var(--success-color);
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .improvement-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .improvement-header::before {
+            content: '✓'; /* Modern checkmark */
+            font-size: 1.5em;
+            margin-right: 10px;
+            color: var(--success-color);
+            line-height: 1;
+        }
+
+        #how-to-improve {
+            font-size: 1em;
+            color: var(--text-dark);
+            white-space: pre-wrap; /* Preserve formatting if any */
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MIGS Analytics Dashboard</h1>
+            <p class="subtitle">Real-time Score Breakdown and Improvement Roadmap</p>
+        </header>
+
+        <section class="input-section">
+            <label for="member-id" style="font-weight: 600;">Member ID:</label>
+            <input type="number" id="member-id" placeholder="e.g., 31412" value="31412">
+            <button id="fetch-button">Get Analysis</button>
+        </section>
+
+        <div id="loading" class="status-message">Fetching data...</div>
+        <div id="error-message" class="status-message"></div>
+
+        <section id="results-dashboard">
+            <h2 id="member-name">Member: Loading...</h2>
+
+            <div class="total-score-container">
+                <div class="score-box">
+                    <div class="total-value" id="total-points">0</div>
+                    <div class="score-label">Total MIGS Points</div>
+                </div>
+                <div class="score-divider"></div>
+                <div class="score-box">
+                    <div class="rating-value" id="star-rating">0-STAR</div>
+                    <div class="score-label">Star Rating</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card"><div class="card-value" id="MIGSYearsPoints">0</div><div class="card-label">Years of Membership Points</div></div>
+                <div class="card"><div class="card-value" id="MIGSShareCapPoints">0</div><div class="card-label">Share Capital Points</div></div>
+                <div class="card"><div class="card-value" id="MIGSFixedShareCapPoints">0</div><div class="card-label">Fixed Deposits to Share Cap Points</div></div>
+                <div class="card"><div class="card-value" id="MIGSADBPoints">0</div><div class="card-label">Average Daily Balance Points</div></div>
+                <div class="card"><div class="card-value" id="MIGSPast3LoansPoints">0</div><div class="card-label">Past 3 Loans Record Points</div></div>
+                <div class="card"><div class="card-value" id="MIGSRecentLoanPoints">0</div><div class="card-label">Recent Loan Record Points</div></div>
+            </div>
+
+            <div id="improvement-section">
+                <div class="improvement-header">Personalized Improvement Roadmap</div>
+                <p id="how-to-improve">Analysis pending...</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_URL = 'https://fqsapi.onrender.com/FireBaseFQS/GetMIGSQueryResponse';
+        const memberIdInput = document.getElementById('member-id');
+        const fetchButton = document.getElementById('fetch-button');
+        const resultsDashboard = document.getElementById('results-dashboard');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+
+        // Function to update the UI with fetched data
+        function updateDashboard(data) {
+            document.getElementById('member-name').textContent = `Member: ${data.Name}`;
+            document.getElementById('total-points').textContent = data.TotalPoints;
+            document.getElementById('star-rating').textContent = data.StarRating;
+            document.getElementById('how-to-improve').textContent = data.HowToImproveRating;
+
+            // Update individual point cards
+            document.getElementById('MIGSYearsPoints').textContent = data.MIGSYearsPoints;
+            document.getElementById('MIGSShareCapPoints').textContent = data.MIGSShareCapPoints;
+            document.getElementById('MIGSFixedShareCapPoints').textContent = data.MIGSFixedShareCapPoints;
+            document.getElementById('MIGSADBPoints').textContent = data.MIGSADBPoints;
+            document.getElementById('MIGSPast3LoansPoints').textContent = data.MIGSPast3LoansPoints;
+            document.getElementById('MIGSRecentLoanPoints').textContent = data.MIGSRecentLoanPoints;
+
+            // Animate the dashboard appearance
+            resultsDashboard.style.display = 'block';
+            setTimeout(() => {
+                resultsDashboard.style.opacity = '1';
+            }, 50); // Small delay to ensure display:block is applied first
+        }
+
+        // Function to handle the API call
+        async function fetchMIGSData() {
+            const memberId = memberIdInput.value.trim();
+
+            if (!memberId) {
+                alert('Please enter a Member ID.');
+                return;
+            }
+
+            // Reset UI state
+            resultsDashboard.style.opacity = '0';
+            resultsDashboard.style.display = 'none';
+            errorMessage.style.opacity = '0';
+            errorMessage.style.display = 'none';
+            
+            loading.style.display = 'block';
+            setTimeout(() => { loading.style.opacity = '1'; }, 50);
+
+            fetchButton.disabled = true;
+            fetchButton.textContent = 'Analyzing...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: memberId, // Raw number expected
+                });
+
+                loading.style.opacity = '0';
+                loading.style.display = 'none';
+
+                if (!response.ok) {
+                    throw new Error(`Server error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data || data.Error) {
+                     throw new Error(data.Error || 'Invalid Member ID or data not available.');
+                }
+
+                updateDashboard(data);
+
+            } catch (error) {
+                loading.style.opacity = '0';
+                loading.style.display = 'none';
+                console.error('Fetch error:', error);
+                
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+                setTimeout(() => { errorMessage.style.opacity = '1'; }, 50);
+
+            } finally {
+                fetchButton.disabled = false;
+                fetchButton.textContent = 'Get Analysis';
+            }
+        }
+
+        // Event Listeners
+        fetchButton.addEventListener('click', fetchMIGSData);
+        memberIdInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                fetchMIGSData();
+            }
+        });
+
+        // Load the sample data on initial page load
+        document.addEventListener('DOMContentLoaded', fetchMIGSData);
+
+    </script>
+</body>
+</html>
